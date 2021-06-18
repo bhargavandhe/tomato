@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { AuthProvider } from "./AuthContext";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import LandingPage from "./pages/LandingPage";
+import Profile from "./pages/Profile";
+import PrivateRoute from "./components/PrivateRoute";
+import { CssBaseline } from "@material-ui/core";
+import EditProfile from "./pages/EditProfile";
+import { ThemeProvider } from "@material-ui/core/styles";
+import Explore from "./pages/Explore";
+import Favorites from "./pages/Favorites";
+import Cart from "./pages/Cart";
+import AddData from "./pages/AddData";
+import theme from "./theme";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <CssBaseline />
+      <Router>
+        <ThemeProvider theme={theme}>
+          <AuthProvider>
+            <Switch>
+              <PrivateRoute exact path="/" component={Home} />
+              <Route path="/login" component={LandingPage} />
+              <PrivateRoute path="/profile" component={Profile} />
+              <PrivateRoute path="/explore" component={Explore} />
+              <PrivateRoute path="/favorites" component={Favorites} />
+              <PrivateRoute path="/cart" component={Cart} />
+              <Route path="" component={NotFound} />
+              {/* <Route path="/add" component={AddData} /> */}
+            </Switch>
+          </AuthProvider>
+        </ThemeProvider>
+      </Router>
     </div>
   );
 }
