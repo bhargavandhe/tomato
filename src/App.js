@@ -6,7 +6,6 @@ import LandingPage from "./pages/LandingPage";
 import Profile from "./pages/Profile";
 import PrivateRoute from "./components/PrivateRoute";
 import { CssBaseline } from "@material-ui/core";
-import EditProfile from "./pages/EditProfile";
 import { ThemeProvider } from "@material-ui/core/styles";
 import Explore from "./pages/Explore";
 import Favorites from "./pages/Favorites";
@@ -14,6 +13,7 @@ import Cart from "./pages/Cart";
 import AddData from "./pages/AddData";
 import theme from "./theme";
 import NotFound from "./pages/NotFound";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -29,8 +29,9 @@ function App() {
               <PrivateRoute path="/explore" component={Explore} />
               <PrivateRoute path="/favorites" component={Favorites} />
               <PrivateRoute path="/cart" component={Cart} />
-              <Route path="" component={NotFound} />
+              <PrivateRoute path="/orders" component={Orders} />
               {/* <Route path="/add" component={AddData} /> */}
+              <Route path="" component={NotFound} />
             </Switch>
           </AuthProvider>
         </ThemeProvider>

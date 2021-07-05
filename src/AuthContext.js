@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 
 const AuthContext = React.createContext();
@@ -24,6 +24,7 @@ export function AuthProvider({ children }) {
         gender: values.gender,
         age: values.age,
         phone: values.phone,
+        tomcoins: 0,
       })
       .then(() => {
         console.log("Added");
@@ -52,12 +53,10 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    return auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
       setLoading(false);
     });
-
-    return unsubscribe;
   }, []);
 
   const value = {

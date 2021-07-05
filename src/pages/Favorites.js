@@ -4,13 +4,15 @@ import { useAuth } from "../AuthContext";
 import AppBar from "../components/AppBar";
 import Post from "../components/Post";
 import { db } from "../firebase";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Loading from "../components/Loading";
+
 function Favorites() {
   const [foods, setFoods] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const email = useAuth().currentUser.email;
+  let hotelNames = new Map();
 
   function populateFavorites() {
     db.collection("userData")
@@ -23,10 +25,23 @@ function Favorites() {
         fav.forEach((element) => {
           db.doc(element)
             .get()
-            .then((data) => {
+            .then(async (data) => {
               console.log("GET FAV");
-              setFoods((oldFoods) => [...oldFoods, data.data()]);
-              console.log("Done adding");
+              const address = element.split("/");
+              if (!hotelNames.has(address[1])) {
+                await db
+                  .collection("restaurants")
+                  .doc(address[1])
+                  .get()
+                  .then((data) => {
+                    console.log("GET");
+                    hotelNames.set(address[1], data.data().displayName);
+                  });
+              }
+              setFoods((oldFoods) => [
+                ...oldFoods,
+                { ...data.data(), displayName: hotelNames.get(address[1]) },
+              ]);
             });
         });
         setLoading(false);
@@ -45,16 +60,22 @@ function Favorites() {
   }
 
   useEffect(() => {
+    setFavorites([]);
+    setCart([]);
     populateFavorites();
     populateCart();
   }, []);
 
-  if (!loading) {
-    return favorites.length > 0 ? (
-      <div>
-        <AppBar />
+  return (
+    <>
+      <AppBar />
+      {loading ? (
+        <Loading />
+      ) : favorites.length > 0 ? (
         <Container>
-          <Typography variant="h2">Your favorites</Typography>
+          <Typography style={{ padding: 20 }} variant="h4">
+            Your favorites
+          </Typography>
           <Grid container spacing={4}>
             {foods.map((post) => {
               return (
@@ -69,27 +90,15 @@ function Favorites() {
             })}
           </Grid>
         </Container>
-      </div>
-    ) : (
-      <div>
-        <AppBar />
+      ) : (
         <Container>
           <Paper style={{ padding: 20 }} variant="outlined">
             <h1>You haven't yet added anything to favorites</h1>
           </Paper>
         </Container>
-      </div>
-    );
-  } else {
-    return (
-      <>
-        <AppBar />
-        <Container>
-          <CircularProgress color="secondary" />
-        </Container>
-      </>
-    );
-  }
+      )}
+    </>
+  );
 }
 
 export default Favorites;

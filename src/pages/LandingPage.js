@@ -1,10 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import TabPanel from "../components/TabPanel";
 import SwipeableViews from "react-swipeable-views";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 import Login from "./Login";
 import Register from "./Register";
+import logo from "../logo.png";
 
 import {
   CssBaseline,
@@ -14,7 +14,6 @@ import {
   Grid,
   Box,
   Typography,
-  Avatar,
   Container,
 } from "@material-ui/core";
 
@@ -98,19 +97,42 @@ function LandingPage() {
     setTab(newValue);
   };
 
+  const images = [
+    "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1611464030193-2a21a26a9be1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1526318896980-cf78c088247c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1536816579748-4ecb3f03d72a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1535229398509-70179087ac75?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1623593688280-a5aec8ac4ae7?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1625248442085-10a1a2563dd6?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1604632911232-18733a0b3563?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1618427012166-b0e03d490a4a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    "https://images.unsplash.com/photo-1562790879-dfde82829db0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80",
+    "https://images.unsplash.com/photo-1559703248-dcaaec9fab78?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80",
+    "https://images.unsplash.com/photo-1554080204-5c97677848bd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=700&q=80",
+    "https://images.unsplash.com/photo-1559181567-c3190ca9959b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=700&q=80",
+  ];
+  const [image, setImage] = useState(images[0]);
+
+  useEffect(() => {
+    setImage(images[Math.floor(Math.random() * images.length)]);
+  }, []);
+
   return (
     <>
       <Grid container>
         <Grid item xs={0} md={6} l={4}>
           <div className={classes.root}>
-            <img src="https://images.unsplash.com/photo-1470324161839-ce2bb6fa6bc3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" />
+            <img src={image} />
           </div>
         </Grid>
         <Grid item xs={12} md={6} l={8}>
-          <Container component="main" maxWidth={"sm"}>
+          <Container component="main" maxWidth="sm">
             <CssBaseline />
             <div className={classes.paper}>
-              <img src="https://firebasestorage.googleapis.com/v0/b/tomato-30cb2.appspot.com/o/logo.png?alt=media&token=3fe3fe56-1e60-4b05-9d97-f83d3dbb3b65" />
+              <img src={logo} />
               <Tabs
                 value={tab}
                 onChange={handleTabChange}

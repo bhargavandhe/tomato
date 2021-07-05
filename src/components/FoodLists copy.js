@@ -7,7 +7,7 @@ import Loading from "./Loading";
 
 function FoodLists({ filters }) {
   const email = useAuth().currentUser.email;
-  const { searchValue } = filters;
+  const { categoryFilter, searchValue } = filters;
   const [foods, setFoods] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [cart, setCart] = useState([]);
@@ -66,29 +66,27 @@ function FoodLists({ filters }) {
 
   if (loading) return <Loading />;
 
-  return (
+  return categoryFilter == "" ? (
     <Container>
       <Grid container spacing={4}>
         {foods.map((post) => {
-          if (searchValue !== "") {
-            if (
-              post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-              post.displayName
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              post.category.toLowerCase().includes(searchValue.toLowerCase())
-            ) {
-              return (
-                <Grid item xs={12} sm={6} md={4}>
-                  <Post
-                    props={post}
-                    isfav={favorites.includes(post.ref)}
-                    isCart={cart.includes(post.ref)}
-                  />
-                </Grid>
-              );
-            }
-          } else {
+          return (
+            <Grid item xs={12} sm={6} md={4}>
+              <Post
+                props={post}
+                isfav={favorites.includes(post.ref)}
+                isCart={cart.includes(post.ref)}
+              />
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Container>
+  ) : (
+    <Container>
+      <Grid container spacing={4}>
+        {foods.map((post) => {
+          if (post.category == categoryFilter)
             return (
               <Grid item xs={12} sm={6} md={4}>
                 <Post
@@ -98,7 +96,6 @@ function FoodLists({ filters }) {
                 />
               </Grid>
             );
-          }
         })}
       </Grid>
     </Container>

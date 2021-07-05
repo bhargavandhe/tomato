@@ -1,4 +1,3 @@
-import { Typography } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Badge from "@material-ui/core/Badge";
 import { red } from "@material-ui/core/colors";
@@ -22,7 +21,10 @@ import React, { useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { db } from "../firebase";
-
+import { fade, InputBase, Tooltip } from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import TableChartRoundedIcon from "@material-ui/icons/TableChartRounded";
+import TableChartOutlinedIcon from "@material-ui/icons/TableChartOutlined";
 const useStyles = makeStyles((theme) => ({
   logo: {
     textDecoration: "none",
@@ -56,13 +58,58 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.black, 0.15),
+    "&:hover": {
+      backgroundColor: fade(theme.palette.common.black, 0.25),
+    },
+    marginLeft: 0,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: theme.spacing(1),
+      width: "auto",
+    },
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
+      },
+    },
+  },
 }));
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchBar({ props }) {
   const classes = useStyles();
+  const location = useLocation().pathname;
+
+  let searchValue, setSearchValue;
+  if (location == "/") {
+    searchValue = props.searchValue;
+    setSearchValue = props.setSearchValue;
+  }
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const location = useLocation().pathname;
 
   const { currentUser, logout } = useAuth();
   const [cartCount, setCartCount] = useState(0);
@@ -221,7 +268,7 @@ export default function PrimarySearchAppBar() {
 
   return (
     <div className={classes.grow} style={{ marginBottom: 80 }}>
-      <AppBar position="fixed" color="#fff" elevation={1}>
+      <AppBar position="fixed" color="inherit" elevation={1}>
         <Toolbar>
           <Link to="/" className={classes.icons}>
             {/* <img
@@ -231,45 +278,85 @@ export default function PrimarySearchAppBar() {
             <h1 style={{ color: "#f00", fontFamily: "Work Sans" }}>tomato</h1>
           </Link>
           <div className={classes.grow} />
+          {location == "/" && (
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                placeholder="Search…"
+                value={searchValue}
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                onChange={(event) => setSearchValue(event.target.value)}
+                inputProps={{ "aria-label": "search" }}
+              />
+            </div>
+          )}
           <div className={classes.sectionDesktop}>
             <Link to="/" className={classes.icons}>
-              <IconButton color="inherit">
-                {location === "/" ? <HomeRoundedIcon /> : <HomeOutlinedIcon />}
-              </IconButton>
+              <Tooltip title="Home">
+                <IconButton color="inherit">
+                  {location === "/" ? (
+                    <HomeRoundedIcon />
+                  ) : (
+                    <HomeOutlinedIcon />
+                  )}
+                </IconButton>
+              </Tooltip>
             </Link>
             <Link to="/explore" className={classes.icons}>
-              <IconButton color="inherit">
-                {location === "/explore" ? (
-                  <ExploreRoundedIcon />
-                ) : (
-                  <ExploreOutlinedIcon />
-                )}
-              </IconButton>
+              <Tooltip title="Explore">
+                <IconButton color="inherit">
+                  {location === "/explore" ? (
+                    <ExploreRoundedIcon />
+                  ) : (
+                    <ExploreOutlinedIcon />
+                  )}
+                </IconButton>
+              </Tooltip>
             </Link>
             <Link to="/favorites" className={classes.icons}>
-              <IconButton color="inherit">
-                <Badge badgeContent={favCount} color="secondary">
-                  {location === "/favorites" ? (
-                    <FavoriteRoundedIcon />
-                  ) : (
-                    <FavoriteBorderOutlinedIcon />
-                  )}
-                </Badge>
-              </IconButton>
+              <Tooltip title="Favorites">
+                <IconButton color="inherit">
+                  <Badge badgeContent={favCount} color="secondary">
+                    {location === "/favorites" ? (
+                      <FavoriteRoundedIcon />
+                    ) : (
+                      <FavoriteBorderOutlinedIcon />
+                    )}
+                  </Badge>
+                </IconButton>
+              </Tooltip>
             </Link>
             <Link to="/cart" className={classes.icons}>
-              <IconButton
-                aria-label="show 17 new notifications"
-                color="inherit"
-              >
-                <Badge badgeContent={cartCount} color="secondary">
-                  {location === "/cart" ? (
-                    <ShoppingCartRoundedIcon />
+              <Tooltip title="Cart">
+                <IconButton
+                  aria-label="show 17 new notifications"
+                  color="inherit"
+                >
+                  <Badge badgeContent={cartCount} color="secondary">
+                    {location === "/cart" ? (
+                      <ShoppingCartRoundedIcon />
+                    ) : (
+                      <ShoppingCartOutlinedIcon />
+                    )}
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+            </Link>
+            <Link to="/orders" className={classes.icons}>
+              <Tooltip title="Order history">
+                <IconButton color="inherit">
+                  {location === "/orders" ? (
+                    <TableChartRoundedIcon />
                   ) : (
-                    <ShoppingCartOutlinedIcon />
+                    <TableChartOutlinedIcon />
                   )}
-                </Badge>
-              </IconButton>
+                </IconButton>
+              </Tooltip>
             </Link>
             {/* <Link to="/add" className={classes.icons}>
               <IconButton color="inherit">
@@ -280,16 +367,18 @@ export default function PrimarySearchAppBar() {
                 )}
               </IconButton>
             </Link> */}
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+            <Tooltip title="Profile">
+              <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+            </Tooltip>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

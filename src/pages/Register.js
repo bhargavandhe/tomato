@@ -13,6 +13,7 @@ import {
   Button,
   FormControlLabel,
 } from "@material-ui/core";
+import { useEffect } from "react";
 const useStyles = makeStyles((theme) => ({
   logo: {
     margin: "20px",
@@ -50,6 +51,10 @@ export default function Register({
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState(false);
 
+  useEffect(() => {
+    setIsChecked(false);
+  }, []);
+
   const handleCheck = () => {
     setIsChecked(!isChecked);
   };
@@ -60,8 +65,8 @@ export default function Register({
       console.log(values);
       await signup(values);
       history.push("/");
-    } catch {
-      console.log("Failed to create an account");
+    } catch (err) {
+      console.log("Failed to create an account", err);
     }
   }
 

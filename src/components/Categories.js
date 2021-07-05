@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
 import Chip from "@material-ui/core/Chip";
-import TagFacesIcon from "@material-ui/icons/TagFaces";
+import { db } from "../firebase";
+import { useEffect } from "react";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -17,33 +18,64 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Categories() {
+export default function Categories({ props }) {
   const classes = useStyles();
-  const categories = [
-    "Vegetarian",
-    "Non-vegetarian",
-    "Fast food",
-    "Pizza",
-    "Dessert",
-    "Instant",
-  ];
-  const [chipData, setChipData] = React.useState(categories);
-  const handleDelete = (chipToDelete) => () => {
-    setChipData((chips) => chips.filter((chip) => chip != chipToDelete));
-  };
+
+  const { categoryFilter, setCategoryFilter } = props;
+  const [categories, setCategories] = useState([]);
+
+  function populateCategories() {
+    db.collection("categories")
+      .get()
+      .then((data) => {
+        data.docs.forEach((category) => {
+          setCategories((initCategories) => [...initCategories, category.id]);
+        });
+      });
+  }
+
+  useEffect(() => {
+    setCategories([]);
+    populateCategories();
+  }, []);
 
   return (
     <Container className={classes.root}>
-      {categories.map((category) => {
+      {categories.map((category, index) => {
         return (
-          <li key={categories.indexOf(category)}>
-            <Chip
-              icon={<TagFacesIcon />}
-              label={category}
-              onDelete={handleDelete(category)}
-              className={classes.chip}
-              color="secondary"
-            />
+          <li>
+            {category == categoryFilter ? (
+              <Chip
+                className={classes.chip}
+                label={
+                  category[0].toUpperCase() +
+                  category.substr(1, category.length).toLowerCase()
+                }
+                color="secondary"
+                clickable
+                variant="default"
+                onClick={() => {
+                  setCategoryFilter(categories[index]);
+                }}
+                onDelete={() => {
+                  setCategoryFilter("");
+                }}
+              />
+            ) : (
+              <Chip
+                className={classes.chip}
+                label={
+                  category[0].toUpperCase() +
+                  category.substr(1, category.length).toLowerCase()
+                }
+                color="secondary"
+                clickable
+                variant="outlined"
+                onClick={() => {
+                  setCategoryFilter(categories[index]);
+                }}
+              />
+            )}
           </li>
         );
       })}

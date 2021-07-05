@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import clsx from "clsx";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import {
   Card,
+  CardHeader,
   CardMedia,
   CardContent,
   CardActions,
@@ -17,11 +16,7 @@ import {
   DialogContentText,
   DialogTitle,
   Container,
-  Collapse,
-  Grid,
-  Tooltip,
 } from "@material-ui/core";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import { Snackbar } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { red, green } from "@material-ui/core/colors";
@@ -37,6 +32,7 @@ import { useAuth } from "../AuthContext";
 import { firestore } from "firebase";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import QueryBuilderRoundedIcon from '@material-ui/icons/QueryBuilderRounded';
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,25 +42,18 @@ const useStyles = makeStyles((theme) => ({
     transition:
       ".3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12)",
     "&:hover": {
-      transform: "scale(1.02)",
+      transform: "scale(1.03)",
       boxShadow: "0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06)",
     },
   },
   media: {
-    paddingTop: "65%",
+    paddingTop: "50%",
   },
   link: {
     textDecoration: "none",
   },
-  expand: {
-    transform: "rotate(0deg)",
+  action: {
     marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: "rotate(180deg)",
   },
 }));
 
@@ -79,7 +68,6 @@ export default function Post({ props, isfav, isCart }) {
     price,
     ref,
     deliveryTime,
-    available,
   } = props;
 
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -89,12 +77,6 @@ export default function Post({ props, isfav, isCart }) {
   const [isInCart, setIsInCart] = useState(isCart);
   const classes = useStyles();
   const [quantity, setQuantity] = useState(1);
-  const [expanded, setExpanded] = React.useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
   const handleDialogClickOpen = () => {
     setOpenDialog(true);
   };
@@ -258,41 +240,41 @@ export default function Post({ props, isfav, isCart }) {
       <AlertDialog />
       <Link to={to} className={classes.link}>
         <Card className={classes.root} variant="outlined">
-          <CardMedia className={classes.media} image={media} />
+          <CardHeader
+            avatar={
+              <Avatar
+                aria-label="recipe"
+                style={{
+                  backgroundColor: type === "non-veg" ? red[500] : green[500],
+                }}
+              >
+                <FiberManualRecordIcon />
+              </Avatar>
+            }
+            title={title}
+            action={<h4 style={{ marginRight: 10 }}>{`Rs. ${price}`}</h4>}
+            subheader={displayName}
+          />
+
+          <CardMedia className={classes.media} image={media} title={title} />
+
           <CardContent>
-            <Grid container>
-              <Grid item xs={2}>
-                <Avatar
-                  aria-label="recipe"
-                  style={{
-                    backgroundColor: type === "non-veg" ? red[500] : green[500],
-                  }}
-                >
-                  <FiberManualRecordIcon />
-                </Avatar>
-              </Grid>
-              <Grid item xs={10}>
-                <Grid direction="row" container>
-                  <Grid item xs={9}>
-                    <Typography variant="h6">{title}</Typography>
-                  </Grid>
-                  <Grid item xs={3} align="right">
-                    <Typography>{`Rs. ${price}`}</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography>{displayName}</Typography>
-                  </Grid>
-                  <Tooltip title="4.5" placement="bottom">
-                    <Grid item xs={6} align="right">
-                      <StarRoundedIcon color="secondary" />
-                      <StarRoundedIcon color="secondary" />
-                      <StarRoundedIcon color="secondary" />
-                      <StarRoundedIcon color="secondary" />
-                    </Grid>
-                  </Tooltip>
-                </Grid>
-              </Grid>
-            </Grid>
+            <Container
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <QueryBuilderRoundedIcon />
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                component="p"
+                style={{ marginLeft: 20 }}
+              >
+                {deliveryTime} mins
+              </Typography>
+            </Container>
           </CardContent>
           <CardActions disableSpacing>
             <IconButton
@@ -301,10 +283,12 @@ export default function Post({ props, isfav, isCart }) {
             >
               <FavoriteRounded />
             </IconButton>
+            <IconButton onClick={handleShare}>
+              <ShareRounded />
+            </IconButton>
             <Button
               size="large"
               className={classes.action}
-              disabled={!available}
               startIcon={
                 isInCart ? (
                   <RemoveCircleOutlineRounded />
@@ -316,30 +300,7 @@ export default function Post({ props, isfav, isCart }) {
             >
               {isInCart ? "Remove" : "Add to Cart"}
             </Button>
-            <IconButton onClick={handleShare}>
-              <ShareRounded />
-            </IconButton>
-            <IconButton
-              className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded,
-              })}
-              onClick={handleExpandClick}
-              aria-expanded={expanded}
-              aria-label="show more"
-            >
-              <ExpandMoreIcon />
-            </IconButton>
           </CardActions>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent>
-              <Typography>{`Delivery time - ${deliveryTime} mins.`}</Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum
-                deserunt amet vel libero assumenda eius eveniet repellat ea
-                suscipit tempora?
-              </Typography>
-            </CardContent>
-          </Collapse>
         </Card>
       </Link>
     </>

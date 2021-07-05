@@ -1,37 +1,15 @@
-import React from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import React, { useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import MobileStepper from "@material-ui/core/MobileStepper";
 import { Container, IconButton } from "@material-ui/core";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
+import firebase from "@firebase/app";
+import "@firebase/storage";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-const url =
-  "https://firebasestorage.googleapis.com/v0/b/tomato-30cb2.appspot.com/o/offer-page.jpg?alt=media&token=e2bf449c-e7a8-4118-9f14-63ed21c2ab24";
-const tutorialSteps = [
-  {
-    label: "San Francisco – Oakland Bay Bridge, United States",
-    imgPath: url,
-  },
-  {
-    label: "Bird",
-    imgPath: url,
-  },
-  {
-    label: "Bali, Indonesia",
-    imgPath: url,
-  },
-  {
-    label: "NeONBRAND Digital Marketing, Las Vegas, United States",
-    imgPath: url,
-  },
-  {
-    label: "Goč, Serbia",
-    imgPath: url,
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,11 +30,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SwipeableTextMobileStepper() {
+export default function DotStepper() {
   const classes = useStyles();
-  const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = tutorialSteps.length;
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -70,6 +46,24 @@ function SwipeableTextMobileStepper() {
     setActiveStep(step);
   };
 
+  const [url, setUrl] = useState([]);
+
+  async function setOffers() {
+    const storage = firebase.storage();
+    for (let i = 1; i <= 5; i++) {
+      await storage
+        .ref(`offers/offer-${i}.jpg`)
+        .getDownloadURL()
+        .then((url) => {
+          setUrl((initUrls) => [...initUrls, url]);
+        });
+    }
+  }
+
+  useEffect(() => {
+    setOffers();
+  }, []);
+
   return (
     <Container>
       <div className={classes.root}>
@@ -78,20 +72,20 @@ function SwipeableTextMobileStepper() {
           onChangeIndex={handleStepChange}
           enableMouseEvents
         >
-          {tutorialSteps.map((step, index) => (
-            <div key={step.label}>
+          {url.map((step, index) => (
+            <div key={index}>
               {Math.abs(activeStep - index) <= 2 ? (
                 <img
                   style={{ borderRadius: 8 }}
                   className={classes.img}
-                  src={step.imgPath}
+                  src={step}
                 />
               ) : null}
             </div>
           ))}
         </AutoPlaySwipeableViews>
         <MobileStepper
-          steps={maxSteps}
+          steps={url.length}
           position="static"
           variant="dots"
           activeStep={activeStep}
@@ -99,7 +93,7 @@ function SwipeableTextMobileStepper() {
             <IconButton
               size="medium"
               onClick={handleNext}
-              disabled={activeStep === maxSteps - 1}
+              disabled={activeStep === url.length - 1}
             >
               <KeyboardArrowRight />
             </IconButton>
@@ -119,5 +113,3 @@ function SwipeableTextMobileStepper() {
     </Container>
   );
 }
-
-export default SwipeableTextMobileStepper;
