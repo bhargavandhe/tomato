@@ -11,16 +11,20 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
 
-  async function signup(values) {
-    console.log(values.email);
-    await db
+  async function signup(email, password) {
+    return await auth.createUserWithEmailAndPassword(email, password);
+  }
+
+  async function setUserData(values) {
+    return await db
       .collection("userData")
       .doc(values.email)
       .set({
         orders: [],
         favorites: [],
         cart: [],
-        name: values.name,
+        firstName: values.firstName,
+        lastName: values.lastName,
         gender: values.gender,
         age: values.age,
         phone: values.phone,
@@ -28,7 +32,6 @@ export function AuthProvider({ children }) {
       })
       .then(() => {
         console.log("Added");
-        auth.createUserWithEmailAndPassword(values.email, values.password);
       });
   }
 
@@ -67,6 +70,7 @@ export function AuthProvider({ children }) {
     resetPassword,
     updateEmail,
     updatePassword,
+    setUserData,
   };
 
   return (

@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DotStepper from "../components/DotStepper";
-import { Grid } from "@material-ui/core";
-import Categories from "../components/Categories";
 import FoodLists from "../components/FoodLists";
 import AppBar from "../components/AppBar";
-import Loading from "../components/Loading";
-
 function Home() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [searchValue, setSearchValue] = useState("");

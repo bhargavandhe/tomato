@@ -33,7 +33,7 @@ export default function Hotel({ hotelData }) {
   }
 
   return (
-    <Grid item xs={6}>
+    <Grid item xs={12} md={6}>
       <Card className={classes.root} variant="outlined">
         <CardActionArea>
           <CardMedia

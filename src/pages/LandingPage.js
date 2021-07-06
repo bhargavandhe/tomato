@@ -16,6 +16,8 @@ import {
   Typography,
   Container,
 } from "@material-ui/core";
+import { useAuth } from "../AuthContext";
+import { ErrorSharp } from "@material-ui/icons";
 
 function Copyright() {
   return (
@@ -75,14 +77,58 @@ function LandingPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    name: "",
-    age: "",
-    phone: "",
-    gender: "",
+    firstName: "",
+    lastName: "",
+    age: "0",
+    phone: "0",
+    gender: "U",
   });
 
-  const nextStage = () => {
-    setStage(stage + 1);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  const { signup, setUserData } = useAuth();
+
+  useEffect(() => {
+    setErrors({
+      ...errors,
+      password:
+        values.password != values.confirmPassword
+          ? "Passwords don't match"
+          : "",
+    });
+  }, [values.password, values.confirmPassword]);
+
+  const nextStage = async () => {
+    if (values.password == values.confirmPassword) {
+      try {
+        await signup(values.email, values.password).then(async () => {
+          return await setUserData(values).then(() => {
+            setValues({
+              ...values,
+              firstName: "",
+              lastName: "",
+              age: "",
+              phone: "",
+              gender: "",
+            });
+            setStage(stage + 1);
+          });
+        });
+      } catch (err) {
+        if (err.code == "auth/email-already-in-use") {
+          setErrors({ ...errors, email: "Email address is already in use" });
+        } else if (err.code == "auth/invalid-email") {
+          setErrors({ ...errors, email: "Email address is invalid" });
+        } else {
+          setErrors({ ...errors, email: "" });
+        }
+      }
+    } else {
+      setErrors({ ...errors, password: "Passwords don't match" });
+    }
   };
 
   const prevStage = () => {
@@ -164,6 +210,7 @@ function LandingPage() {
                     stage={stage}
                     nextStage={nextStage}
                     prevStage={prevStage}
+                    errors={errors}
                   />
                 </TabPanel>
               </SwipeableViews>

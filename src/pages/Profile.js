@@ -20,6 +20,7 @@ import {
   DialogActions,
   LinearProgress,
   InputAdornment,
+  fade,
 } from "@material-ui/core";
 import { red } from "@material-ui/core/colors";
 import { useAuth } from "../AuthContext";
@@ -31,10 +32,9 @@ import DateRangeOutlinedIcon from "@material-ui/icons/DateRangeOutlined";
 import GroupOutlinedIcon from "@material-ui/icons/GroupOutlined";
 import { firestore } from "firebase";
 import LocalMallIcon from "@material-ui/icons/LocalMall";
-import ListAltRoundedIcon from "@material-ui/icons/ListAltRounded";
 import FavoriteOutlinedIcon from "@material-ui/icons/FavoriteOutlined";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-const useStyles = makeStyles({
+import DashboardRoundedIcon from "@material-ui/icons/DashboardRounded";
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: 50,
   },
@@ -42,6 +42,10 @@ const useStyles = makeStyles({
     textAlign: "center",
     padding: 40,
     marginTop: 50,
+    transition: "0.3s ease-in-out",
+    "&:hover": {
+      backgroundColor: fade(theme.palette.common.black, 0.1),
+    },
   },
   header: {
     display: "flex",
@@ -55,14 +59,15 @@ const useStyles = makeStyles({
   link: {
     textDecoration: "none",
   },
-});
+}));
 
 function Profile() {
   const classes = useStyles();
   const email = useAuth().currentUser.email;
 
   const [values, setValues] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     favorites: [],
     cart: [],
     orders: [],
@@ -76,10 +81,9 @@ function Profile() {
   useEffect(() => {
     db.collection("userData")
       .doc(email)
-      .get()
-      .then((data) => {
+      .onSnapshot((snapshot) => {
         console.log("GET");
-        setValues(data.data());
+        setValues(snapshot.data());
       });
   }, []);
 
@@ -103,6 +107,10 @@ function Profile() {
     db.collection("userData")
       .doc(email)
       .update({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        age: values.age,
+        gender: values.gender,
         address: values.address,
         phone: values.phone,
       })
@@ -176,10 +184,14 @@ function Profile() {
           <CardHeader
             avatar={
               <Avatar aria-label="recipe" className={classes.avatar}>
-                {values.name[0]}
+                {values.firstName[0]}
               </Avatar>
             }
-            title={<Typography variant="h3">{values.name}</Typography>}
+            title={
+              <Typography variant="h3">
+                {values.firstName + " " + values.lastName}
+              </Typography>
+            }
             subheader={
               <Typography style={{ marginLeft: 5 }}>{email}</Typography>
             }
@@ -246,19 +258,24 @@ function Profile() {
                   </Link>
                 </Grid>
                 <Grid item xs={4}>
-                  <Paper variant="outlined" className={classes.paper}>
-                    <Typography
-                      variant="h5"
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <ListAltRoundedIcon style={{ marginRight: 10 }} />
-                      {values.orders.length}
-                    </Typography>
-                    <Typography variant="body1">orders</Typography>
-                  </Paper>
+                  <Link to="/orders" className={classes.link}>
+                    <Paper variant="outlined" className={classes.paper}>
+                      <Typography
+                        variant="h5"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <DashboardRoundedIcon
+                          color="secondary"
+                          style={{ marginRight: 10 }}
+                        />
+                        {values.orders.length}
+                      </Typography>
+                      <Typography variant="body1">orders</Typography>
+                    </Paper>
+                  </Link>
                 </Grid>
               </Grid>
 
@@ -267,10 +284,47 @@ function Profile() {
                   <TextField
                     variant="outlined"
                     fullWidth
+                    name="firstName"
+                    label="First name"
+                    id="firstName"
+                    onChange={handleChange("firstName")}
+                    value={values.firstName}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DateRangeOutlinedIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    name="lastName"
+                    label="Last name"
+                    id="lastName"
+                    onChange={handleChange("lastName")}
+                    value={values.lastName}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DateRangeOutlinedIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={2} style={{ marginTop: 10 }}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
                     name="age"
                     label="Age"
                     id="age"
-                    disabled
                     value={values.age}
                     InputProps={{
                       startAdornment: (
@@ -288,7 +342,6 @@ function Profile() {
                     name="gender"
                     label="Gender"
                     id="gender"
-                    disabled
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">

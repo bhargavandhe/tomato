@@ -46,8 +46,8 @@ export default function Login() {
       await login(email, password);
       setLoading(false);
       history.push("/");
-    } catch {
-      console.log("Failed to log in");
+    } catch (err) {
+      console.log(err);
       setLoading(false);
     }
   }

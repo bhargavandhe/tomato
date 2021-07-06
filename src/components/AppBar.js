@@ -23,8 +23,8 @@ import { useAuth } from "../AuthContext";
 import { db } from "../firebase";
 import { fade, InputBase, Tooltip } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-import TableChartRoundedIcon from "@material-ui/icons/TableChartRounded";
-import TableChartOutlinedIcon from "@material-ui/icons/TableChartOutlined";
+import DashboardOutlinedIcon from "@material-ui/icons/DashboardOutlined";
+import DashboardRoundedIcon from "@material-ui/icons/DashboardRounded";
 const useStyles = makeStyles((theme) => ({
   logo: {
     textDecoration: "none",
@@ -104,7 +104,7 @@ export default function PrimarySearchBar({ props }) {
   const location = useLocation().pathname;
 
   let searchValue, setSearchValue;
-  if (location == "/") {
+  if (location === "/") {
     searchValue = props.searchValue;
     setSearchValue = props.setSearchValue;
   }
@@ -278,7 +278,7 @@ export default function PrimarySearchBar({ props }) {
             <h1 style={{ color: "#f00", fontFamily: "Work Sans" }}>tomato</h1>
           </Link>
           <div className={classes.grow} />
-          {location == "/" && (
+          {location === "/" && (
             <div className={classes.search}>
               <div className={classes.searchIcon}>
                 <SearchIcon />
@@ -351,9 +351,9 @@ export default function PrimarySearchBar({ props }) {
               <Tooltip title="Order history">
                 <IconButton color="inherit">
                   {location === "/orders" ? (
-                    <TableChartRoundedIcon />
+                    <DashboardRoundedIcon />
                   ) : (
-                    <TableChartOutlinedIcon />
+                    <DashboardOutlinedIcon />
                   )}
                 </IconButton>
               </Tooltip>

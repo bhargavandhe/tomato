@@ -44,7 +44,7 @@ export default function Categories({ props }) {
       {categories.map((category, index) => {
         return (
           <li>
-            {category == categoryFilter ? (
+            {category === categoryFilter ? (
               <Chip
                 className={classes.chip}
                 label={

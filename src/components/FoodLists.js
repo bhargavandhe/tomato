@@ -4,6 +4,7 @@ import { useAuth } from "../AuthContext";
 import Post from "../components/Post";
 import { db } from "../firebase";
 import Loading from "./Loading";
+import Footer from "./Footer";
 
 function FoodLists({ filters }) {
   const email = useAuth().currentUser.email;
@@ -67,17 +68,29 @@ function FoodLists({ filters }) {
   if (loading) return <Loading />;
 
   return (
-    <Container>
-      <Grid container spacing={4}>
-        {foods.map((post) => {
-          if (searchValue !== "") {
-            if (
-              post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-              post.displayName
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              post.category.toLowerCase().includes(searchValue.toLowerCase())
-            ) {
+    <>
+      <Container>
+        <Grid container spacing={4}>
+          {foods.map((post) => {
+            if (searchValue !== "") {
+              if (
+                post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+                post.displayName
+                  .toLowerCase()
+                  .includes(searchValue.toLowerCase()) ||
+                post.category.toLowerCase().includes(searchValue.toLowerCase())
+              ) {
+                return (
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Post
+                      props={post}
+                      isfav={favorites.includes(post.ref)}
+                      isCart={cart.includes(post.ref)}
+                    />
+                  </Grid>
+                );
+              }
+            } else {
               return (
                 <Grid item xs={12} sm={6} md={4}>
                   <Post
@@ -88,20 +101,11 @@ function FoodLists({ filters }) {
                 </Grid>
               );
             }
-          } else {
-            return (
-              <Grid item xs={12} sm={6} md={4}>
-                <Post
-                  props={post}
-                  isfav={favorites.includes(post.ref)}
-                  isCart={cart.includes(post.ref)}
-                />
-              </Grid>
-            );
-          }
-        })}
-      </Grid>
-    </Container>
+          })}
+        </Grid>
+      </Container>
+      <Footer />
+    </>
   );
 }
 
